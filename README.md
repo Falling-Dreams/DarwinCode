@@ -15,5 +15,5 @@ DarwinCode includes:
 	+ A hard-decision decoder implementation
 
 ## Contact ##
-email: manueljosh3[at]gmail.com
-twitter: @QuiteRather
++ email: manueljosh3[at]gmail.com
++ twitter: @QuiteRather
