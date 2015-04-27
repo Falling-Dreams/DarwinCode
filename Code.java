@@ -1,18 +1,18 @@
-import java.util.Arrays;
-
 /*
  * Bugfixes:
  * + Array index out of bounds for some instances
  * + Reliable Generator matrix generation
  * 
  * TODO:
- * + Allow for BEC decoding
+ * + Allow for BEC decoding?
  * + Make decoding algorithm recursive? Just 'cause.
  * + Add noise simulator
  * + Evolve things.
  */
 
-public class Code {
+
+public class Code implements java.io.Serializable {
+	private static final long serialVersionUID = 7711339048320293596L; //Random UID
 	public int n;
 	public int k;
 	
@@ -20,6 +20,13 @@ public class Code {
 	public int[][] H; //Parity check
 	public int[][] abr; //abbreviated generator
 	public int[] p; //encoded message
+	
+	Code(int n, int k) { //Hamming code
+		//TODO use HARDCODED hamming matrix for now: 7, 4
+				H = new int [][] { {1,0,1,0,1,0,1},
+					{0,1,1,0,0,1,1},
+					{0,0,0,1,1,1,1} };
+	}
 	
 	/**
 	 * Constructor
@@ -31,7 +38,7 @@ public class Code {
 		this.n = n;
 		this.k = k;
 		
-		/*this.H = new int[n-k][n]; //parity check matrix
+		this.H = new int[n-k][n]; //parity check matrix
 		for (int row = 0; row < H.length; row++) {
 			for (int col = 0; col < H[row].length; col++) {
 				if (Math.random() <= density) {
@@ -41,11 +48,8 @@ public class Code {
 					H[row][col] = 0;
 				}
 			}
-		}*/
-		//TODO use hamming matrix for now
-		H = new int [][] { {1,0,1,0,1,0,1},
-			{0,1,1,0,0,1,1},
-			{0,0,0,1,1,1,1} };
+		}
+		
 		
 		//create abbreviated table for generator
 		abr = new int[n-k][k];
@@ -90,19 +94,6 @@ public class Code {
 	Code(Code mom, Code dad) { //TODO
 		
 	}
-
-	/*public int[] encode(int[] p) { //matrix multiplication of G (generator) and p (message) % 2
-		int[] ans = new int[p.length];
-		for (int col = 0; col < G[0].length; col++) {
-			int sum = 0;
-			for (int row = 0; row < G.length; row++) {
-				sum += (p[col]*G[row][col]);
-			}
-			p[col] = sum % 2;
-			//System.out.println("p: " + p[col]);
-		}
-		return ans;
-	}*/
 	
 	public int[] encode(int[] p) {
 		int[] ans = new int[G.length];
@@ -253,33 +244,6 @@ public class Code {
 		}
 	}
 	
-	public static void main(String args[]) {
-		Code a = new Code(7, 4, .5);
-		a.show();
-		int[] p = {1,1,1,1};
-		int[] y = a.encode(p);
-		y[0] = (y[0] +1) %2;
-		//y[1] = y[0] +1 %2;
-		int step = 0;
-		int[] temp = y;
+
 		
-		System.out.println("\nY: ");
-		for (int i = 0; i < y.length; i++) {
-			System.out.print(y[i]);
-		}
-		
-		do {
-			temp = a.decode(temp);
-			System.out.println();
-			System.out.print("Decoded:\t");
-			for (int i = 0; i < temp.length; i++) {
-				System.out.print(temp[i]);
-			}
-			
-			step++;
-			
-			System.out.println("\nStep: " + step);
-		}
-		while (step < 3);
-	}
 }
