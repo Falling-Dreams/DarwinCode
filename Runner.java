@@ -4,19 +4,23 @@ import java.io.*;
 public class Runner {
 	
 	private ObjectInputStream obj_in;
-
-	public Code load(String name) throws ClassNotFoundException, IOException {
-		
+	
+	/*
+	 * @param name	The name of the file to load
+	 * @return		
+	 */
+	public Code load(String name) {
+		Object obj;
 		try {
 			FileInputStream f_in = new FileInputStream(name);
 			obj_in = new ObjectInputStream (f_in);
-		} catch (IOException ex) {
-			ex.printStackTrace();
+			obj = obj_in.readObject(); //read the object
+		} catch (IOException | ClassNotFoundException ex) {
+			ex.getMessage();
+			//ex.printStackTrace();
 			return null;
 		}
 		
-		Object obj = obj_in.readObject(); //read the object
-
 		if (obj instanceof Code)
 		{
 			Code ans = (Code) obj;
@@ -26,15 +30,21 @@ public class Runner {
 		return null;
 	}
 	
-	public void save(Code obj, String name) throws IOException, FileNotFoundException {
-		FileOutputStream f_out = new FileOutputStream(name);
-		ObjectOutputStream obj_out;
-		obj_out = new ObjectOutputStream(f_out);
-		obj_out.writeObject(obj);
-		obj_out.close();
+	public void save(Code obj, String name) {
+		try {
+			FileOutputStream f_out = new FileOutputStream(name);
+			ObjectOutputStream obj_out;
+			obj_out = new ObjectOutputStream(f_out);
+			obj_out.writeObject(obj);
+			obj_out.close();
+		} catch (IOException ex) {
+			ex.getMessage();
+			//ex.printStackTrace();
+		}
+		
 	}
 	
-	public static void main(String[] args) throws FileNotFoundException, IOException, ClassNotFoundException {
+	public static void main(String[] args) {
 		Runner run = new Runner();
 		//run.test();
 		//Code a = new Code(7, 4, .5);
