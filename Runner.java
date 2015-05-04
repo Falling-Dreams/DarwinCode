@@ -1,20 +1,16 @@
 import java.io.*;
 
-
 public class Runner {
 	
-	private ObjectInputStream obj_in;
-	
-	/*
-	 * @param name	The name of the file to load
-	 * @return		
-	 */
 	public Code load(String name) {
 		Object obj;
+		
 		try {
+			ObjectInputStream obj_in;
 			FileInputStream f_in = new FileInputStream(name);
 			obj_in = new ObjectInputStream (f_in);
-			obj = obj_in.readObject(); //read the object
+			obj = obj_in.readObject();
+			obj_in.close();
 		} catch (IOException | ClassNotFoundException ex) {
 			ex.getMessage();
 			//ex.printStackTrace();
@@ -44,17 +40,28 @@ public class Runner {
 		
 	}
 	
-	public static void main(String[] args) {
-		Runner run = new Runner();
-		//run.test();
-		//Code a = new Code(7, 4, .5);
-		//run.save(a, "blorp.data");
-		Code b = run.load("blorp.data");
+	public void debug() {
+		Code a = new LDPCCode(7, 4, .4);
+		//a.show();
+		int[] p = {1,0,1,1};
+		int[] ans = a.decode(a.encode(p));
+		
+		System.out.println("Decoded:\n");
+		for (int i = 0; i < ans.length; i++) {
+			System.out.print(ans[i]);
+		}
+		
+		this.save(a, "blorp.data");
+		Code b = this.load("blorp.data");
 		if (b instanceof Code) {
 			b.show();
 		}
 		System.out.println("Hey");
-		
+	}
+	
+	public static void main(String[] args) {
+		Runner run = new Runner();
+		run.debug();
 	}
 	
 }

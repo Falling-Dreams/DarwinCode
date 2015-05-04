@@ -7,7 +7,8 @@ DarwinCode creates LDPC codes using a simplified genetic algorithm. Working LDPC
 
 DarwinCode includes:
 --------------------
-+ A generator for a random LDPC code (which includes all relevant matrices)
++ A generator for a random LDPC code
++ A pseudo-genetic algorithm to find good codes
 + A rudimentary bit-flipping channel implementation
 + A method for saving/loading codes
 + Ability to export a code as plaintext

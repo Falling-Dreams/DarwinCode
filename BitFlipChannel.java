@@ -16,10 +16,10 @@ public class BitFlipChannel extends Channel {
 				feed[i] = (feed[i] + 1) % 2;
 			}
 		}
-		
 		return ans;
 	}
-	//Test this method.
+	
+	@Override
 	public int[] flip(int feed[], int numToFlip) {
 		int index = (int) Math.random() * feed.length;
 		if (numToFlip == 0) {
