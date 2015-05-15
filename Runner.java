@@ -2,7 +2,11 @@ import java.io.*;
 
 public class Runner {
 	
-	public Code load(String name) {
+	boolean isRunning = true;
+	private String[] strings;
+	
+	
+	public Code loadCode(String name) {
 		Object obj;
 		
 		try {
@@ -40,28 +44,88 @@ public class Runner {
 		
 	}
 	
-	public void debug() {
-		Code a = new LDPCCode(7, 4, .4);
-		//a.show();
-		int[] p = {1,0,1,1};
-		int[] ans = a.decode(a.encode(p));
+	public void export(Code input, String name) {
 		
-		System.out.println("Decoded:\n");
-		for (int i = 0; i < ans.length; i++) {
-			System.out.print(ans[i]);
+		try {
+			FileOutputStream f_out = new FileOutputStream(name);
+			ObjectOutputStream obj_out;
+			obj_out = new ObjectOutputStream(f_out);
+			obj_out.writeObject(input.toString());
+			obj_out.close();
+		} catch (IOException ex) {
+			ex.getMessage();
+			//ex.printStackTrace();
 		}
-		
-		this.save(a, "blorp.data");
-		Code b = this.load("blorp.data");
-		if (b instanceof Code) {
-			b.show();
-		}
-		System.out.println("Hey");
 	}
 	
-	public static void main(String[] args) {
+	public void debug() {
+		Code a = new HammingCode(16, 11);
+		System.out.println(a.toString());
+		int[] p = {1,1,1,1,1,1,1,1,1,0,1};
+		int[] ans = a.encode(p);
+		int[] dec = a.decode(ans);
+		/*System.out.println("Decoded:\n");
+		for(int i = 0; i < dec.length; i++) {
+			System.out.print(dec[i]);
+		}*/
+		
+
+		this.save(a, "blorp.data");
+		Code b = this.loadCode("blorp.data");
+		if (b != null) {
+			System.out.println(b.toString());
+		}
+		
+		System.out.println("Hey");
+
+	}
+	
+	public Double getNumber(String message) {
+		BufferedReader input = new BufferedReader (new InputStreamReader(System.in));
+		Double ans = null;
+		try {
+			ans = Double.parseDouble(input.readLine());
+		}
+		catch (IOException ex) {
+			ex.printStackTrace();
+		}
+		return ans;
+		
+	}
+	
+	public boolean loadStrings(String name) {
+
+		try {
+			BufferedReader stream = new BufferedReader(new FileReader(name));
+			
+			String all = "";
+			String input;
+			do {
+				input = stream.readLine();
+				if (input != null) {
+					all += input + "\n";
+				}
+			} while(input != null);
+			stream.close();
+			this.strings = all.split("###");
+		} catch (IOException ex) {
+			ex.getMessage();
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	public static void main(String[] args) throws IOException {
 		Runner run = new Runner();
-		run.debug();
+		if (run.loadStrings("strings.txt")) {
+			for(int i = 0; i < run.strings.length; i++) {
+				System.out.print(run.strings[i]);
+			}
+		}
+		else {
+			System.out.println("The needed strings were not loaded.");
+		}
 	}
 	
 }

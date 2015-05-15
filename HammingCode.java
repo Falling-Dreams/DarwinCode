@@ -5,15 +5,29 @@ public class HammingCode extends Code{
 
 	HammingCode(int n, int k) {
 		super("Hamming", n, k);
-		//TODO use HARDCODED hamming matrix for now: 7, 4
-		H = new int [][] { {1,0,1,0,1,0,1},
-			{0,1,1,0,0,1,1},
-			{0,0,0,1,1,1,1} };
-		initialize();
-	}
+		
+		H = new int[n-k][n];
+		
+		for (int row = 0; row < H.length; row++) {
+			
+			if (row == 0) {
+				H[row][0] = 1;
+			}
+			else {
+				H[row][0] = 0;
+			}
+			
+			for (int col = 2; col <= H[row].length; col++) {
+				String colBinary = Integer.toBinaryString(col);
+				if(colBinary.length() < row + 1) {
+					H[row][col-1] = 0;
+				}
+				else {
+					H[row][col-1] = Character.getNumericValue(colBinary.charAt(colBinary.length() - (row + 1)));
+				}
+			}
+		}
 
-	@Override
-	public int[] decode(int[] y) { //TODO implement
-		return null;
+		initialize();
 	}
 }

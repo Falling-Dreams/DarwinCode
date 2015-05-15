@@ -1,10 +1,8 @@
 
 public class BitFlipChannel extends Channel {
 	
-	double chance;
-	
-	BitFlipChannel (double chance) {
-		this.chance = chance;
+	BitFlipChannel(double prob) {
+		super(prob);
 	}
 	
 	@Override
@@ -19,7 +17,6 @@ public class BitFlipChannel extends Channel {
 		return ans;
 	}
 	
-	@Override
 	public int[] flip(int feed[], int numToFlip) {
 		int index = (int) Math.random() * feed.length;
 		if (numToFlip == 0) {
