@@ -8,11 +8,14 @@ public abstract class Code implements Serializable {
 	protected int k;
 	
 	protected String type;
+	protected double efficiency = -1;
 	
 	protected int[][] G; //generator
 	protected int[][] H; //Parity check matrix
 	protected int[][] abr; //abbreviated generator
 	protected int[] p; //encoded message
+	
+	protected int index;
 	
 	public Code(String type, int n, int k) {
 		this.type = type;
@@ -21,14 +24,11 @@ public abstract class Code implements Serializable {
 		
 	}
 	
-	/*
-	public Code(String type, int numData) { //TODO Codeword length
+	public Code(String type, int CWLength) {
 		this.type = type;
-		this.n = numParityBits(numData) + numData + 1;
-		this.k = n-numData;
-		System.out.println("N: " + n + ", numPB: " + numData + ", k: " + k);
+		this.n = CWLength;
+		this.k = CWLength - numParityBits(CWLength);
 	}
-	*/
 	
 	public int[][] getG() {
 		return G;
@@ -42,6 +42,10 @@ public abstract class Code implements Serializable {
 		return p;
 	}
 	
+	public double getEfficiency() {
+		return this.efficiency;
+	}
+	
 	private int numParityBits(int CWLen) {
 		int ans = 0;
 		int num = 0;
@@ -51,6 +55,9 @@ public abstract class Code implements Serializable {
 		}
 		return ans;
 	}
+	
+	protected abstract void createPC();
+	
 	public void initialize() {
 		//Subclasses take care of creating the parity check matrix
 		//create abbreviated table for generator
@@ -207,5 +214,9 @@ public abstract class Code implements Serializable {
 		pc += "\n";
 		
 		return cr + gen + pc;
+	}
+	
+	public void printStats() {
+		System.out.print(efficiency);
 	}
 }

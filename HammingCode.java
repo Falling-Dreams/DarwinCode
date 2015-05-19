@@ -5,7 +5,18 @@ public class HammingCode extends Code{
 
 	HammingCode(int n, int k) {
 		super("Hamming", n, k);
-		
+		createPC();
+		initialize();
+	}
+	
+	HammingCode(int CWLength) {
+		super("Hamming", CWLength);
+		createPC();
+		initialize();
+	}
+	
+	@Override
+	protected void createPC() {
 		H = new int[n-k][n];
 		
 		for (int row = 0; row < H.length; row++) {
@@ -27,7 +38,5 @@ public class HammingCode extends Code{
 				}
 			}
 		}
-
-		initialize();
 	}
 }
