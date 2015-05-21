@@ -217,6 +217,6 @@ public abstract class Code implements Serializable {
 	}
 	
 	public void printStats() {
-		System.out.print(efficiency);
+		System.out.print("Score: " + efficiency + " ");
 	}
 }

@@ -2,28 +2,39 @@ import java.util.ArrayList;
 
 public class Genetic {
 	
-	ArrayList<Code> pop = new ArrayList<Code>(); //population of Codes
+	private ArrayList<Code> pop = new ArrayList<Code>(); //population of Codes
 	
-	Genetic(int popSize, int CWLength, double density) {
-		populate(this, popSize, CWLength, density);
+	String encodeMessage;
+	int decodeCycles;
+	int popSize;
+	int numToSave;
+	int CWLength;
+	
+	Genetic(String encodeMessage, int decodeCycles, int popSize, int numToSave, int CWLength, double density) {
+		this.encodeMessage = encodeMessage;
+		this.decodeCycles = decodeCycles;
+		this.popSize = popSize;
+		this.numToSave = numToSave;
+		this.CWLength = CWLength;
+		populate(density);
 	}
 	
 	//if density is < 1, use a random density for each code
-	public static void populate(Genetic gen, int popSize, int CWLength, double density) {
+	public void populate(double density) {
 		for(int i = 0; i < popSize; i++) {
 			if (density < 0) {
-				gen.pop.add(new LDPCCode(CWLength, Math.random()));
+				this.pop.add(new LDPCCode(CWLength, (((int) (Math.random()*100)))/100.0) );
 			}
 			else {
-				gen.pop.add(new LDPCCode(CWLength, density));
+				this.pop.add(new LDPCCode(CWLength, density));
 			}
 		}
 	}
 	
-	public static void printPop(Genetic gen) {
-		for(int i = 0; i < gen.pop.size(); i++) {
+	public void printPop() {
+		for(int i = 0; i < this.pop.size(); i++) {
 			System.out.print("\t\t " + i  + "\t");
-			gen.pop.get(i).printStats();
+			this.pop.get(i).printStats();
 			System.out.println();
 		}
 	}
@@ -37,4 +48,16 @@ public class Genetic {
 		}
 	}
 	
+	public Code get(int i) {
+		return this.pop.get(i);
+	}
+	
+	public int add(Code e) { //adds and returns the index of the code
+		this.pop.add(e);
+		return pop.size() -1;
+	}
+	
+	public void run() { //BIG CODE
+		
+	}
 }
