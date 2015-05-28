@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 public abstract class Code implements Serializable {
 
@@ -17,12 +18,8 @@ public abstract class Code implements Serializable {
 	
 	protected int index;
 	
-	public Code(String type, int n, int k) {
-		this.type = type;
-		this.n = n;
-		this.k = k;
-		
-	}
+	protected double density;
+	protected double suggestedDensity;
 	
 	public Code(String type, int CWLength) {
 		this.type = type;
@@ -46,7 +43,11 @@ public abstract class Code implements Serializable {
 		return this.efficiency;
 	}
 	
-	private int numParityBits(int CWLen) {
+	public void setEfficiency(int i) {
+		this.efficiency = i;
+	}
+	
+	public static int numParityBits(int CWLen) { //public and static to allow Genetic to get the message bits
 		int ans = 0;
 		int num = 0;
 		while(num <= CWLen) {
@@ -55,8 +56,6 @@ public abstract class Code implements Serializable {
 		}
 		return ans;
 	}
-	
-	protected abstract void createPC();
 	
 	public void initialize() {
 		//Subclasses take care of creating the parity check matrix
@@ -67,7 +66,7 @@ public abstract class Code implements Serializable {
 		for(int row = 0; row < H.length; row++) {
 			int aCol = 0;
 			for(int col = 0; col <= H[row].length; col++) {
-				if(!((col & -col) == col)) {
+				if(!((col & -col) == col)) { //if the col isn't a power of two
 					abr[aRow][aCol] = H[row][col-1]; //TODO Need to feed in correct length message
 					aCol++;
 				}
@@ -76,14 +75,14 @@ public abstract class Code implements Serializable {
 		}
 		
 		G = new int[n][k]; //generator matrix
-		int row = 0;
+		int r = 0;
 		int c = 0;
 		for (int gRow = 1; gRow < n; gRow++) { //TODO FIX FOR MORE
 			//System.out.println("gSum     ->  " + gRow);
 			if ((gRow & -gRow) == gRow) { //TODO nope
 				//System.out.println("it worked!");
-				G[gRow-1] = abr[row];
-				row++;
+				G[gRow-1] = abr[r];
+				r++;
 			}
 			else {
 				for (int i = 0; i < G[0].length; i++) {
@@ -98,28 +97,29 @@ public abstract class Code implements Serializable {
 			}
 		}
 		G[G.length-1][G[0].length-1] = 1;
+		calculateDensity();
 	}
-
+	
+	private void calculateDensity() {
+	//simply set it to the number of ones over the total size of the PC matrix
+		double numOnes = 0.0;
+		for(int row = 0; row < H.length; row++) {
+			for(int col = 0; col < H[row].length; col++) {
+				if (H[row][col] == 1) {
+					numOnes++;
+				}
+			}
+		}
+		this.density = numOnes / (H[0].length * H.length);
+}
 	
 	public int[] encode(int[] p) {
-		
-		for(int i = 0; i < p.length; i++) {
-			System.out.print(p[i] + " ");
-		}
-		
 		int[] ans = new int[G.length];
 		for (int row = 0; row < G.length; row++) {
 			for (int col = 0; col < G[row].length; col++) {
-				ans[row] += G[row][col] * p[col]; //TODO ERROR java.lang.ArrayIndexOutOfBoundsException: 4
+				ans[row] = (G[row][col] * p[col]) % 2;
 			}
 		}
-		/*
-		System.out.print("Encoded:\t");
-		for (int row = 0; row < ans.length; row++) {
-			ans[row] = ans[row] % 2;
-			System.out.print(ans[row]);
-		}
-		*/
 		this.p = ans;
 		return ans;
 	}
@@ -150,16 +150,6 @@ public abstract class Code implements Serializable {
 			}
 			
 		}
-		
-		/*
-		System.out.println("\nRESPONSE");
-		
-		for(int row = 0; row < response.length; row++) {
-			for(int col = 0; col < response[row].length; col++) {
-				System.out.print(response[row][col]);
-			}
-			System.out.println();
-		} */
 		
 		for(int col = 0; col < response[0].length; col++) {
 			int num1 = 0;		
@@ -217,6 +207,12 @@ public abstract class Code implements Serializable {
 	}
 	
 	public void printStats() {
-		System.out.print("Score: " + efficiency + " ");
+		 DecimalFormat df = new DecimalFormat("#0.000");
+		 
+		 System.out.print("\tScore: " + efficiency + " Density: " + df.format(density));
+	}
+	
+	public double getDensity() {
+		return density;
 	}
 }

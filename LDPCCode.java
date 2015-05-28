@@ -14,30 +14,26 @@
 public class LDPCCode extends Code {
 	
 	private static final long serialVersionUID = 3874234847726153634L;
-	private double density;
-	LDPCCode(int n, int k, double density) {
-		super("Low Density Parity Check", n, k);
-		this.density = density;
-		
-		//create parity check matrix, then initialize from super
-		
-		createPC();
-		initialize();
-	}
 	
-	LDPCCode(int CWLength, double density) {
+	LDPCCode(int CWLength, double suggestedDensity) {
 		super("Low Density Parity Check", CWLength);
-		this.density = density;
-		createPC();
+		createPC(suggestedDensity);
 		initialize();
 	}
 	
-	@Override
-	public void createPC() {
+	LDPCCode(int CWLength, double mutateChance, LDPCCode parent) {
+		super("Low Density Parity Check", CWLength);
+		H = parent.getH();
+		suggestedDensity = parent.suggestedDensity;
+		mutatePC(mutateChance);
+		initialize();
+	}
+	
+	public void createPC(double suggestedDensity) {
 		H = new int[n-k][n];
 		for (int row = 0; row < H.length; row++) {
 			for (int col = 0; col < H[row].length; col++) {
-				if (Math.random() <= density) {
+				if (Math.random() <= suggestedDensity) {
 					H[row][col] = 1;
 				}
 				else {
@@ -47,9 +43,13 @@ public class LDPCCode extends Code {
 		}
 	}
 	
-	@Override
-	public void printStats() {
-		super.printStats();
-		System.out.print("Density: " + this.density);
+	public void mutatePC(double mutateChance) {
+		for(int row = 0; row < H.length; row++) {
+			for(int col = 0; col < H[row].length; col++) {
+				if (Math.random() <= mutateChance) {
+					H[row][col] = (H[row][col] + 1) % 2;
+				}
+			}
+		}
 	}
 }

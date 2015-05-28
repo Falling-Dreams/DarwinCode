@@ -12,8 +12,7 @@ DarwinCode includes:
 + A rudimentary bit-flipping channel implementation
 + A method for saving/loading codes
 + Ability to export a code as plaintext
-+ Ability to test and compare performance data of codes
-+ A hard-decision decoder implementation
+x+ A hard-decision decoder implementation
 
 ## Contact ##
 + email: manueljosh3[at]gmail.com

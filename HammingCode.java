@@ -2,12 +2,6 @@
 public class HammingCode extends Code{
 
 	private static final long serialVersionUID = 3849979856791666909L;
-
-	HammingCode(int n, int k) {
-		super("Hamming", n, k);
-		createPC();
-		initialize();
-	}
 	
 	HammingCode(int CWLength) {
 		super("Hamming", CWLength);
@@ -15,7 +9,6 @@ public class HammingCode extends Code{
 		initialize();
 	}
 	
-	@Override
 	protected void createPC() {
 		H = new int[n-k][n];
 		

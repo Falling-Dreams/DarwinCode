@@ -6,6 +6,7 @@ public class Runner {
 	private String[] strings;
 	boolean paramsAreSet = false;
 	private Genetic gen;
+	private int CWLength;
 	
 	public Code load (String name) {
 		Code obj = null;
@@ -62,39 +63,6 @@ public class Runner {
 		}
 	}
 	
-	public double getNumber(String message) {
-		BufferedReader input = new BufferedReader (new InputStreamReader(System.in));
-		Double ans = null;
-		do {
-			System.out.print("\t\t" + message);
-			try {
-				ans = Double.parseDouble(input.readLine());
-			}
-			catch (NumberFormatException | IOException ex) {
-				System.err.print(ex.getMessage() + "\n");
-			}
-		} while (ans == null);
-		
-		return ans;
-	}
-	
-	public int getInt(String message) {
-		return (int) Math.round((float)getNumber(message));
-	}
-	
-	public String getString(String message) {
-		BufferedReader input = new BufferedReader (new InputStreamReader(System.in));
-		System.out.print("\t\t" + message);
-		try {
-			return input.readLine();
-		}
-		catch (IOException ex) {
-			ex.getMessage();
-		}
-		return null;
-		
-	}
-	
 	public boolean loadStrings(String name) {
 
 		try {
@@ -118,31 +86,39 @@ public class Runner {
 		return true;
 	}
 	
-	public void runSim() { //TODO
-		
-	}
-	
-	public void compareCodes() { //TODO
-		
-	}
-	
 	public void setParams() {
 		paramsAreSet = true;
-		String encodeMessage = getString("Enter the message to encode. A default will be used if you enter nothing: ");
-		int decodeCycles = getInt("Enter the number of decode cycles (Will affect how long the algorithm runs): ");
-		int popSize = getInt("What should the genetic algorithm's population size be? ");
-		int numToSave = getInt("How many Codes should we save per iteration? ");
+		int decodeCycles;
+		do{
+			decodeCycles = Util.getInt("Enter the number of decode cycles to test (Will affect how long the algorithm runs): ");
+		} while (decodeCycles <= 0);
 		
-		int CWLength;
+		int popSize;
 		do {
-			CWLength = getInt("How long should each codeword be? (Any integer greater than 4)");
+			popSize = Util.getInt("Enter the size of the genetic algorithm's population: ");
+		} while (popSize <=0);
+		
+		int numToSave;
+		do {
+			numToSave = Util.getInt("Enter the number of codes to save per iteration of the algorithm (Less than the population size): ");
+		} while (numToSave > popSize);
+		
+		do {
+			CWLength = Util.getInt("Enter the length of the codeword (a number greater than 4): ");
 		} while (CWLength < 5);
 		
 		double density;
 		do {
-			density = getNumber("Enter a decimal number to set the LDPC code's density (or -1 for random ones)");
+			density = Util.getNumber("Enter decimal between 0 and 1 to suggest the LDPC code's density (or -1 for random densities): ");
 		} while ( (density < 0 || density >= 1) && density != -1);
-		gen = new Genetic(encodeMessage, decodeCycles, popSize, numToSave, CWLength, density);
+		
+		double mutateChance;
+		
+		do {
+			mutateChance = Util.getNumber("Enter a number between 0 and 1 for the mutate chance: ");
+		} while ( mutateChance > 1 || mutateChance < 0);
+		
+		gen = new Genetic(decodeCycles, popSize, numToSave, CWLength, density, mutateChance);
 	}
 	
 	public void mainMenu() {
@@ -150,89 +126,79 @@ public class Runner {
 		gen = null;
 		do {
 			System.out.print(this.strings[1] + this.strings[2]);
-			Double ans = this.getNumber("What shall you choose? ");
+			Double ans = Util.getNumber("What shall you choose? ");
 			System.out.print(this.strings[ans.intValue() + 2]);
 			int input = (int) ans.doubleValue();
-			if (gen == null && input > 3) {
-				System.out.println("\t\tYou have to actually either import a code or set a population size first!");
+			if (gen == null && (input > 3 && input < 8)) {
+				System.out.println("\t\tYou have to modify parameters first!");
 			}
 			else {
 				int index;
 				switch (input) {
-				case 1:
+				case 0:
+					System.out.print(strings[strings.length-1]);
+					break;
+				case 1: //try to run the simulation
 					if (!paramsAreSet) {
 						setParams();
 					}
 					gen.run();
 					break;
-				case 2:
+				case 2: //set the parameters of the genetic algorithm
 					setParams();
 					break;
-				case 3: //save
-					Code loadCode = load(getString("Enter the name of the file: "));
+				case 3: //import a code
+					Code loadCode = load(Util.getString("Enter the name of the file: "));
 					if (loadCode != null) {
-						System.out.println("\tThe code was added at index " + gen.add(loadCode));
+						System.out.println("\n\tThe code was added at index " + gen.add(loadCode));
 					}
 					else {
-						System.out.println("\tThe code couldn't be loaded!");
+						System.out.println("\n\tThe code couldn't be loaded!");
 					}
 					break;
-				case 4:
+				case 4: //add a hamming code
+					gen.popAdd(new HammingCode(CWLength));
+					System.out.println("\tSuccessful!\tSaved at index " + (gen.getPopSize()-1));
+					gen.judgeCode(gen.get(gen.getPopSize()-1));
+					break;
+				case 5: //save
 					gen.printPop();
-					index = getInt("\nEnter the index of the code you want: ");
-					String name = getString("Save as? ");
+					index = Util.getInt("\nEnter the index of the code you want: ");
+					String name = Util.getString("Save as? ");
 					save(gen.get(index), name);
 					System.out.println("Save successful!");
 					break;
-				case 5: //compare code
-					break;
 				case 6: //inspect a code
 					gen.printPop();
-					index = getInt("\nEnter the index of the code you want: ");
-					System.out.println(gen.get(index).toString());
+					index = Util.getInt("\nEnter the index of the code you want: ");
+					System.out.println(gen.get(index));
 					break;
-				case 7: //export a code
+				case 7: //export a code TODO
 					gen.printPop();
-					index = getInt("\nEnter the index of the code you want: ");
+					index = Util.getInt("\nEnter the index of the code you want: ");
+					System.out.println("Here's what your code looks like: ");
 					System.out.println(gen.get(index).toString());
+					export(gen.get(index), Util.getString("Enter the name to save the code under: "));
 					break;
 				case 8: //quit
 					this.isRunning = false;
 					break;
 				}
+				System.out.print(strings[2]);
 			}
 
 		} while(this.isRunning);
 	}
 	
 	public void debug() {
-		/*Genetic g = new Genetic(100, 7, -1);
-		g.printPop();
-		
-		Code a = new HammingCode(16, 11);
-		System.out.println(a.toString());
-		int[] p = {1,1,1,1,1,1,1,1,1,0,1};
-		int[] ans = a.encode(p);
-		int[] dec = a.decode(ans);
-		System.out.println("Decoded:\n");
-		for(int i = 0; i < dec.length; i++) {
-			System.out.print(dec[i]);
-		}
-		
-
-		this.save(a, "blorp.data");
-		Code b = this.loadCode("blorp.data");
-		if (b != null) {
-			System.out.println(b.toString());
-		}
-		
-		System.out.println("Hey");
-		*/
+		//int decodeCycles, int popSize, int numToSave, int CWLength, double density, double mutateChance
+		gen = new Genetic(10, 10, 1, 7, -1, 1);
+		gen.run();
 	}
 	
 	public static void main(String[] args) throws IOException {
+
 		Runner run = new Runner();
-		//run.debug();
 		
 		if (run.loadStrings("strings.txt")) {
 			run.mainMenu();
@@ -241,5 +207,4 @@ public class Runner {
 			System.out.println("The needed strings were not loaded; the program cannot start.");
 		}
 	}
-	
 }
