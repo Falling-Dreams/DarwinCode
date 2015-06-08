@@ -1,0 +1,75 @@
+              ___                  _      _____        __   
+             / _ \___ ______    __(_)__  / ___/__  ___/ /__ 
+            / // / _ `/ __/ |/|/ / / _ \/ /__/ _ \/ _  / -_)
+           /____/\_,_/_/  |__,__/_/_//_/\___/\___/\_,_/\__/ 
+
+	+-----------------------------------------------------+
+	| Welcome to DarwinCode, the interactive Hamming Code |
+	| and random LDPC Code generator!                     |
+	+-----------------------------------------------------+
+###
+	Main Menu
+		0) What is this?
+		1) Run the simulation
+		2) Modify parameters
+		3) Import a code
+		4) Add a Hamming Code
+		5) Save the code
+		6) Inspect a code
+		7) Export a code
+		8) Quit
+###
+        +-----------------------------------------------------+
+###
+	Running the simulation
+###
+	Modifying parameters
+###
+	Importing a code
+###
+	Adding a Hamming Code
+###
+	Saving a code
+###
+	Inspecting a code
+###
+	Exporting a code
+###
+                 _____             ____            __
+                / ___/__  ___  ___/ / /  __ _____ / /
+               / (_ / _ \/ _ \/ _  / _ \/ // / -_)_/ 
+               \___/\___/\___/\_,_/_.__/\_, /\__(_)  
+                                       /___/         
+###
+	What on Earth?
+
+	Information theory:
+	This is a branch mathematics, computer science, and
+	engineering that involves quantifyinginformation.
+	This program focuseson coding theory,a subset of
+	information theory.
+
+	Forward Error Correction (FEC):
+	One of the main uses of codes are to correct errors
+	in the transmission of data over a noisy channel.
+	FEC encodes the information to be sent in a redundant
+	way to allow the reciever to detect errors in
+	transmission.
+
+	Genetic Algorithm:
+	DarwinCode does not use a true genetic algorithm, but
+	rather a partial implementation of one based on GA.
+	In theory, this type of algorithm, which is modeled
+	after Darwinism, allows DarwinCode to converge on
+	viable linear block codes through natural selection.
+	
+	Analysis:
+	In the program's current state, generating a viable
+	LDPC code is extremely inconsistent, and will more
+	often than not result in failure. Much more tuning
+	is needed to prove a GA's ability to converge on
+	linear block codes, but much of this variability
+	is due to the DarwinCode's dependency on user-
+	inputted parameters.
+
+		

@@ -1,13 +1,23 @@
 import java.io.*;
 
+/**
+ * Main interface of the DarwinCode program.
+ * @author Joshua Manuel
+ *
+ */
 public class Runner {
 	
 	boolean isRunning = true;
-	private String[] strings;
+	private String[] strings; //the strings for the program
 	boolean paramsAreSet = false;
 	private Genetic gen;
 	private int CWLength;
 	
+	/*
+	 * Loads the serialized code object from the filesystem with they specified name.
+	 * @param name name of the file to load
+	 * @return the initialized code object
+	 */
 	public Code load (String name) {
 		Code obj = null;
 		
@@ -20,7 +30,6 @@ public class Runner {
 		} catch (IOException | ClassNotFoundException ex) {
 			ex.getMessage();
 		}
-		
 		if (obj instanceof Code)
 		{
 			Code ans = (Code) obj;
@@ -29,6 +38,11 @@ public class Runner {
 		return obj;
 	}
 	
+	/**
+	 * Serializes the code, saving it to the filesystem.
+	 * @param obj the object to serialize
+	 * @param name the name to save obj under
+	 */
 	public void save(Code obj, String name) {
 		try {
 			if (obj != null) {
@@ -49,8 +63,12 @@ public class Runner {
 		
 	}
 	
+	/**
+	 * Exports the code as plaintext, saving it to a file
+	 * @param input the code to save as plaintext
+	 * @param name filename to save the code under
+	 */
 	public void export(Code input, String name) {
-		
 		try {
 			FileOutputStream f_out = new FileOutputStream(name);
 			ObjectOutputStream obj_out;
@@ -59,12 +77,15 @@ public class Runner {
 			obj_out.close();
 		} catch (IOException ex) {
 			ex.getMessage();
-			//ex.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Loads the strings needed for the program.
+	 * @param name name of the text file they are stored under
+	 * @return true if successful, false if not
+	 */
 	public boolean loadStrings(String name) {
-
 		try {
 			BufferedReader stream = new BufferedReader(new FileReader(name));
 			
@@ -77,7 +98,7 @@ public class Runner {
 				}
 			} while(input != null);
 			stream.close();
-			this.strings = all.split("###");
+			this.strings = all.split("###"); //splits the string according to this delimiter
 		} catch (IOException ex) {
 			ex.getMessage();
 			ex.printStackTrace();
@@ -86,6 +107,10 @@ public class Runner {
 		return true;
 	}
 	
+	/**
+	 * Gets user-supplied parameters. This method could not be generalized due to the unique bounds each parameter.
+	 * Afterwards, this method initializes the Genetic object used for the program.
+	 */
 	public void setParams() {
 		paramsAreSet = true;
 		int decodeCycles;
@@ -121,25 +146,29 @@ public class Runner {
 		gen = new Genetic(decodeCycles, popSize, numToSave, CWLength, density, mutateChance);
 	}
 	
+	/**
+	 * The main loop of DarwinCode
+	 * Gets user input and redirects the program based on the user's choices.
+	 */
 	public void mainMenu() {
-		System.out.print(this.strings[0]);
+		System.out.print(this.strings[0]); //print the DarwinCode banner, welcome message
 		gen = null;
 		do {
-			System.out.print(this.strings[1] + this.strings[2]);
+			System.out.print(this.strings[1] + this.strings[2]); //print the menu and footer
 			Double ans = Util.getNumber("What shall you choose? ");
-			System.out.print(this.strings[ans.intValue() + 2]);
+			System.out.print(this.strings[ans.intValue() + 2]); //print the corresponding header for the part of the program
 			int input = (int) ans.doubleValue();
-			if (gen == null && (input > 3 && input < 8)) {
+			if (gen == null && (input >= 3 && input < 8)) { //Some options are locked until gen is initialized
 				System.out.println("\t\tYou have to modify parameters first!");
 			}
 			else {
 				int index;
 				switch (input) {
-				case 0:
+				case 0: //Print the explanation
 					System.out.print(strings[strings.length-1]);
 					break;
 				case 1: //try to run the simulation
-					if (!paramsAreSet) {
+					if (!paramsAreSet) { //only if parameters are set!
 						setParams();
 					}
 					gen.run();
@@ -147,6 +176,7 @@ public class Runner {
 				case 2: //set the parameters of the genetic algorithm
 					setParams();
 					break;
+				
 				case 3: //import a code
 					Code loadCode = load(Util.getString("Enter the name of the file: "));
 					if (loadCode != null) {
@@ -156,12 +186,12 @@ public class Runner {
 						System.out.println("\n\tThe code couldn't be loaded!");
 					}
 					break;
-				case 4: //add a hamming code
+				case 4: //add a Hamming code to the Genetic object's population
 					gen.popAdd(new HammingCode(CWLength));
 					System.out.println("\tSuccessful!\tSaved at index " + (gen.getPopSize()-1));
 					gen.judgeCode(gen.get(gen.getPopSize()-1));
 					break;
-				case 5: //save
+				case 5: //save a code
 					gen.printPop();
 					index = Util.getInt("\nEnter the index of the code you want: ");
 					String name = Util.getString("Save as? ");
@@ -171,9 +201,9 @@ public class Runner {
 				case 6: //inspect a code
 					gen.printPop();
 					index = Util.getInt("\nEnter the index of the code you want: ");
-					System.out.println(gen.get(index));
+					System.out.println("\n" + gen.get(index));
 					break;
-				case 7: //export a code TODO
+				case 7: //export a code
 					gen.printPop();
 					index = Util.getInt("\nEnter the index of the code you want: ");
 					System.out.println("Here's what your code looks like: ");
@@ -190,17 +220,11 @@ public class Runner {
 		} while(this.isRunning);
 	}
 	
-	public void debug() {
-		//int decodeCycles, int popSize, int numToSave, int CWLength, double density, double mutateChance
-		gen = new Genetic(10, 10, 1, 7, -1, 1);
-		gen.run();
-	}
-	
 	public static void main(String[] args) throws IOException {
 
 		Runner run = new Runner();
 		
-		if (run.loadStrings("strings.txt")) {
+		if (run.loadStrings("strings.txt")) { //the strings are essential for this program to run
 			run.mainMenu();
 		}
 		else {
