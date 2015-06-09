@@ -13,6 +13,18 @@ DarwinCode includes:
 + Ability to export a code as plaintext
 + A hard-decision decoder implementation
 
+Requirements:
+------------
+You need java.
+
+Installation
+------------
+1. Download this repository.
+2. Unzip the file
+3. Navigate to repository's directory
+4. Type `javac Runner.java`
+5. Type `java Runner`
+
 ## Contact ##
 + email: manueljosh3[at]gmail.com
 + twitter: @QuiteRather
